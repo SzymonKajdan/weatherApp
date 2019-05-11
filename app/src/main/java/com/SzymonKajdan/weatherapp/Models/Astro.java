@@ -2,7 +2,9 @@ package com.SzymonKajdan.weatherapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
-class Astro {
+import java.io.Serializable;
+
+public class Astro implements Serializable {
     @SerializedName("sunrise")
     private String sunrise;
     @SerializedName("sunset")

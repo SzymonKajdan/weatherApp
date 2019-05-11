@@ -2,7 +2,9 @@ package com.SzymonKajdan.weatherapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
-class Forecastday {
+import java.io.Serializable;
+
+public class Forecastday implements Serializable {
     @SerializedName("date")
     private String date;
     @SerializedName("day")
@@ -29,5 +31,21 @@ class Forecastday {
 
     public void setUv(double uv) {
         this.uv = uv;
+    }
+
+    public Day getDay() {
+        return day;
+    }
+
+    public void setDay(Day day) {
+        this.day = day;
+    }
+
+    public Astro getAstro() {
+        return astro;
+    }
+
+    public void setAstro(Astro astro) {
+        this.astro = astro;
     }
 }

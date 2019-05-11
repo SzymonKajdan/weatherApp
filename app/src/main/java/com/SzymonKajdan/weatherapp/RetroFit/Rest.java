@@ -28,7 +28,7 @@ public class Rest {
 
         Retrofit retrofit = new Retrofit
                 .Builder()
-                .baseUrl("http://api.apixu.com/v1/forecast.json?key=81fa35fe846b469ebc0132923190901")
+                .baseUrl("http://api.apixu.com/v1/")
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         serviceRest = retrofit.create(RestInterface.class);

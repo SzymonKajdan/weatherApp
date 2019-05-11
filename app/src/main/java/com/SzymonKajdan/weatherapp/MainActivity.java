@@ -2,7 +2,6 @@ package com.SzymonKajdan.weatherapp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,9 +9,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 
-import com.SzymonKajdan.weatherapp.Fragments.StartFragment;
+import com.SzymonKajdan.weatherapp.Fragments.InitFragment;
+import com.SzymonKajdan.weatherapp.Fragments.WeatherFragment;
 import com.SzymonKajdan.weatherapp.Navigations.NavigationListener;
 
 public class MainActivity extends AppCompatActivity implements NavigationListener {
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements NavigationListene
                 != PackageManager.PERMISSION_GRANTED) {
             checkUserLocationPermission();
         }
-        changeFragment(StartFragment.newInstance(), false);
+        changeFragment(InitFragment.newInstance(), true);
     }
 
     @Override

@@ -2,13 +2,15 @@ package com.SzymonKajdan.weatherapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
-class Day {
+import java.io.Serializable;
+
+public class Day implements Serializable {
     @SerializedName("maxtemp_c")
     private double maxtemp_c;
     @SerializedName("mintemp_c")
     private double mintemp_c;
     @SerializedName("avgtemp_c")
-    private double avgtemp_cl;
+    private double avgtemp_c;
     @SerializedName("avghumidity")
     private double avghumitidty;
     @SerializedName("condition")
@@ -31,13 +33,6 @@ class Day {
         this.avghumitidty = avghumitidty;
     }
 
-    public double getAvgtemp_cl() {
-        return avgtemp_cl;
-    }
-
-    public void setAvgtemp_cl(double avgtemp_cl) {
-        this.avgtemp_cl = avgtemp_cl;
-    }
 
     public double getMintemp_c() {
         return mintemp_c;
@@ -53,5 +48,13 @@ class Day {
 
     public void setMaxtemp_c(double maxtemp_c) {
         this.maxtemp_c = maxtemp_c;
+    }
+
+    public double getAvgtemp_c() {
+        return avgtemp_c;
+    }
+
+    public void setAvgtemp_c(double avgtemp_c) {
+        this.avgtemp_c = avgtemp_c;
     }
 }

@@ -2,7 +2,9 @@ package com.SzymonKajdan.weatherapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Weather {
+import java.io.Serializable;
+
+public class Weather implements Serializable {
     @SerializedName("location")
     private Location location;
     @SerializedName("current")

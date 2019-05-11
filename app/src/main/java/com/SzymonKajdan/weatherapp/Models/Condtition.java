@@ -2,7 +2,9 @@ package com.SzymonKajdan.weatherapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
-class Condtition {
+import java.io.Serializable;
+
+public class Condtition implements Serializable {
     @SerializedName("icon")
     private String icon;
 

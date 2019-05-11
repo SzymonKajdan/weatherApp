@@ -2,7 +2,9 @@ package com.SzymonKajdan.weatherapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
-class Current {
+import java.io.Serializable;
+
+public class Current  implements Serializable {
     @SerializedName("last_updated")
     private String last_updated;
     @SerializedName("temp_c")
@@ -17,6 +19,10 @@ class Current {
     private  double feelslike_c;
     @SerializedName("condition")
     private Condtition condtition;
+    @SerializedName("cloud")
+    private double cloud;
+    @SerializedName("uv")
+    private  double uv;
 
     public String getLast_updated() {
         return last_updated;
@@ -72,5 +78,21 @@ class Current {
 
     public void setCondtition(Condtition condtition) {
         this.condtition = condtition;
+    }
+
+    public double getCloud() {
+        return cloud;
+    }
+
+    public void setCloud(double cloud) {
+        this.cloud = cloud;
+    }
+
+    public double getUv() {
+        return uv;
+    }
+
+    public void setUv(double uv) {
+        this.uv = uv;
     }
 }
