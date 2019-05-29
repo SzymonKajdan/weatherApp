@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements NavigationListene
                 != PackageManager.PERMISSION_GRANTED) {
             checkUserLocationPermission();
         }
-        changeFragment(InitFragment.newInstance(), true);
+        changeFragment(InitFragment.newInstance(), false);
     }
 
     @Override

@@ -53,12 +53,17 @@ public class AnotherDayFragment extends BaseFragment {
     }
 
     private void setViews() {
-        System.out.println(forecastday.getDate()+" data ");
+
         Picasso.get().load("http:" + forecastday.getDay().getCondtition().getIcon()).into(weatherIcon);
         dayTextView.setText(forecastday.getDate()+"");
         tempTextView.setText(forecastday.getDay().getAvgtemp_c()+"\u00B0" + "C");
-        astroStart.setText("Wschód"+forecastday.getAstro().getSunrise());
 
+        astroStart.setText("Wschód "+forecastday.getAstro().getSunrise());
+        astroend.setText("Zachód  "+forecastday.getAstro().getSunset());
+        uv.setText("UV "+forecastday.getUv());
+        avgHumidity.setText("Wilgotnosc  "+forecastday.getDay().getAvghumitidty()+"%");
+        clould.setText("Max temp "+forecastday.getDay().getMaxtemp_c());
+        avgWind.setText("Wiatr "+forecastday.getDay().getMaxWind());
 
     }
 

@@ -36,7 +36,7 @@ public class WeahterDayAdapter extends RecyclerView.Adapter<WeahterDayAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Forecastday item=dataList.get(i);
 
-        System.out.println(item.getDate());
+
         viewHolder.avgTemp.setText(String.valueOf(item.getDay().getAvgtemp_c()));
         viewHolder.dayName.setText(item.getDate());
 

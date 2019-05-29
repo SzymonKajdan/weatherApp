@@ -15,6 +15,8 @@ public class Day implements Serializable {
     private double avghumitidty;
     @SerializedName("condition")
     private Condtition condtition;
+    @SerializedName("maxwind_mph")
+    private double maxWind;
 
 
     public Condtition getCondtition() {
@@ -56,5 +58,13 @@ public class Day implements Serializable {
 
     public void setAvgtemp_c(double avgtemp_c) {
         this.avgtemp_c = avgtemp_c;
+    }
+
+    public double getMaxWind() {
+        return maxWind;
+    }
+
+    public void setMaxWind(double maxWind) {
+        this.maxWind = maxWind;
     }
 }

@@ -74,7 +74,7 @@ public class WeatherFragment extends BaseFragment {
 
         weather = (Weather) getArguments().getSerializable(WEATHER);
 
-        System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(weather));
+
 
         findViews(rootView);
 
@@ -107,11 +107,11 @@ public class WeatherFragment extends BaseFragment {
 
 
     private void setViews(Weather weather) {
-        System.out.println(weather.getCurrent().getCondtition().getIcon());
+
         Picasso.get().load("http:" + weather.getCurrent().getCondtition().getIcon()).into(weatherIcon);
 
         tempTextView.setText(weather.getCurrent().getTemp_c() + " \u00B0" + "C");
-        System.out.println(weather.getLocation().getName());
+
         cityTextView.setText(weather.getLocation().getName());
 
         humitdityTextView.setText("Wilgotność: \n" + weather.getCurrent().getHumidity() + " %");

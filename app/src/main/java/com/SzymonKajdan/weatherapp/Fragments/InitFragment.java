@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +32,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,15 +47,30 @@ public class InitFragment extends BaseFragment {
     private ViewPager viewPager;
 
 
-
-
-    private List<City> cities;
+    private List<City> cities = new ArrayList<>();
 
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private List<Weather> weatherList;
+    private List<Weather> weatherList = new ArrayList<>();
+    private Geocoder geocoder;
+
+    City city = new City();
 
     public static InitFragment newInstance() {
         return new InitFragment();
+    }
+
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+
+    initFragments();
+        geocoder = new Geocoder(getContext());
+        findLocation(geocoder);
+        System.out.println(viewPagerAdapter.getCount());
+
     }
 
     @Nullable
@@ -64,22 +79,15 @@ public class InitFragment extends BaseFragment {
 
         View view = inflater.inflate(R.layout.init_fragment, container, false);
 
-
-        cities = new ArrayList<>();
-        weatherList = new ArrayList<>();
-
-
-        Geocoder geocoder = new Geocoder(getContext());
-
-
         findViews(view);
+
+
         initFragments();
         setViewPagerAdapter();
 
-        findLocation(geocoder);
 
-
-
+        //    findLocation(geocoder);
+//        System.out.println("wielkosc miast "+cities.size());
 
         return view;
     }
@@ -94,9 +102,9 @@ public class InitFragment extends BaseFragment {
 
     }
 
-private void setViewPagerAdapter(){
+    private void setViewPagerAdapter() {
         viewPager.setAdapter(viewPagerAdapter);
-}
+    }
 
     private void checkIsCityInApi(City city) {
         boolean flag;
@@ -105,23 +113,31 @@ private void setViewPagerAdapter(){
             @Override
             public void onResponse(Call<Weather> call, Response<Weather> response) {
                 Weather weather = response.body();
-                System.out.println(call.request());
+
+
                 if (response.body() != null) {
-                    cities.add(city);
-                    System.out.println(response.toString());
+                    System.out.println("sprawdzam"+checkCity(cities,city)+" "+city.getCity());
+                    if(checkCity(cities,city)){
+                        System.out.println("nie zpaisuje");
+                        cities.add(city);
+                    }else {
+                        System.out.println("zpaiosuje");
+
+                    }
                 } else {
-                    System.out.println(response.body());
-                    Toast.makeText(getContext(), "Miasto " + city.getCity() + " w którym sie znajdujesz nie widnieje w lokaziacji wczytuje reszte miast", Toast.LENGTH_LONG).show();
+
 
                 }
-                loadWeatherForCities(cities);
+
+
 
 
                 for (City c : cities) {
+                    System.out.println("zpaisuje "+c.getCity());
                     c.save();
                 }
 
-                Toast.makeText(getContext(), "rozmair po " + cities.size(), Toast.LENGTH_LONG).show();
+
             }
 
 
@@ -134,28 +150,23 @@ private void setViewPagerAdapter(){
     }
 
 
-    private void loadCities(City city) {
-        Toast.makeText(getContext(), "Laduje miasta z bazy ", Toast.LENGTH_LONG).show();
+    private void loadCities() {
+
+        cities = new ArrayList<>();
 
 
         cities.addAll(SQLite.select().from(City.class).queryList());
-        Toast.makeText(getContext(), "rozmair przed " + cities.size(), Toast.LENGTH_LONG).show();
-
 
         //sprawdzam czy miasto jest w liscie z bazy jesli nie to sprawdxaam cyz w api jest takie maisto
-        if (checkCity(cities, city)) {
-            System.out.println("miasto " + city.getCity());
-            checkIsCityInApi(city);
-        } else {
-
-            Toast.makeText(getContext(), "rozmair po " + cities.size(), Toast.LENGTH_LONG).show();
-            loadWeatherForCities(cities);
+        for (City c : cities) {
+            System.out.println(c.getCity());
         }
+
     }
 
     private void loadWeatherForCities(List<City> cities) {
 
-
+        setViewPagerAdapter();
         for (City city : cities) {
             Rest.getRest().getCitiesForecast(city.getCity(), 7).enqueue(new Callback<Weather>() {
 
@@ -165,21 +176,19 @@ private void setViewPagerAdapter(){
                     if (response.body() != null) {
                         Weather weather = response.body();
                         changeDate(weather);
-                        viewPagerAdapter.notifyDataSetChanged();
+                        //  viewPagerAdapter.notifyDataSetChanged();
+
                         weatherList.add(weather);
 
                         viewPagerAdapter.addFragment(WeatherFragment.newInstance(weather));
                         viewPagerAdapter.notifyDataSetChanged();
 
 
-                        System.out.println(weather.getLocation().getName());
-                        Toast.makeText(getContext(), "Pobrano   " + city.getCity() + " z api  ", Toast.LENGTH_LONG).show();
                     } else {
-                        System.out.println(response.body());
-                        Toast.makeText(getContext(), "Error  " + city.getCity() + " przy pobieraniu tego maista z api  ", Toast.LENGTH_LONG).show();
+
 
                     }
-                    System.out.println(weatherList.size());
+
                 }
 
                 @Override
@@ -191,33 +200,36 @@ private void setViewPagerAdapter(){
         }
 
 
+    }
 
-    }
-private  void  changeDate(Weather weather) {
-    System.out.println(weather.getLocation().getName());
-    List<Forecastday> forecastList = weather.getForecast().getForecastdayList();
-    for (Forecastday forecastday : forecastList) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-        DateTime dt = formatter.parseDateTime(forecastday.getDate());
-        int day = dt.getDayOfWeek();
-        if (day == 1) {
-            forecastday.setDate("PON");
-        } else if (day == 2) {
-            forecastday.setDate("WTO");
-        } else if (day == 3) {
-            forecastday.setDate("SRO");
-        } else if (day == 4) {
-            forecastday.setDate("CZW");
-        } else if (day == 5) {
-            forecastday.setDate("PIO");
-        } else if (day == 6) {
-            forecastday.setDate("SOB");
-        } else {
-            forecastday.setDate("NDZ");
+    private void changeDate(Weather weather) {
+
+        List<Forecastday> forecastList = weather.getForecast().getForecastdayList();
+        for (Forecastday forecastday : forecastList) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+            DateTime dt = formatter.parseDateTime(forecastday.getDate());
+            int day = dt.getDayOfWeek();
+            if (day == 1) {
+                forecastday.setDate("PON");
+            } else if (day == 2) {
+                forecastday.setDate("WTO");
+            } else if (day == 3) {
+                forecastday.setDate("SRO");
+            } else if (day == 4) {
+                forecastday.setDate("CZW");
+            } else if (day == 5) {
+                forecastday.setDate("PIO");
+            } else if (day == 6) {
+                forecastday.setDate("SOB");
+            } else {
+                forecastday.setDate("NDZ");
+            }
+
         }
-        System.out.println(forecastday.getDate());
     }
-};
+
+    ;
+
     private boolean checkCity(final List<City> cities, final City city) {
 
         for (City c : cities) {
@@ -229,6 +241,8 @@ private  void  changeDate(Weather weather) {
     }
 
     private void findLocation(final Geocoder geocoder) {
+    viewPagerAdapter.clear();
+
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -241,27 +255,47 @@ private  void  changeDate(Weather weather) {
                         List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
 
-
-
-                        City city = new City();
                         city.setCity(addressList.get(0).getLocality());
 
-                        if (city.getCity().equals("Łódź")) {
-                            city.setCity("Lodz");
-                        }
-                        loadCities(city);
+
+
+
+                        loadCities();
+
+                        checkIsCityInApi(city);
+
+                        loadWeatherForCities(cities);
+//                        System.out.println("maista wielkosc" + cities.size());
+//                        System.out.println("wilkosc pogoód" + weatherList.size());
+//                        System.out.println("wielkosc adpatera " + viewPagerAdapter.getCount());
+
+//                        if (checkCity(cities, city)) {
+//                            checkIsCityInApi(city);
+//                        } else {
+//
+//                            loadWeatherForCities(cities);
+//                        }
 
 
                     } catch (IOException e) {
                         Toast.makeText(getContext(), "Lokazacja nie wyszuwalal kortynatow przyjmuje domyslne ", Toast.LENGTH_LONG).show();
-
+                        System.out.println("eroor" + city.getCity());
                         City city = new City();
                         city.setCity("Lodz");
-                        loadCities(city);
+                        loadCities();
+                        checkIsCityInApi(city);
 
+                        loadWeatherForCities(cities);
+//                        if (checkCity(cities, city)) {
+//                            checkIsCityInApi(city);
+//                        } else {
+//
+//                            loadWeatherForCities(cities);
+//                        }
                     }
                 }
             });
+
 
         }
 
