@@ -2,6 +2,7 @@ package com.SzymonKajdan.weatherapp.Fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.SzymonKajdan.weatherapp.Adapters.ViewPagerAdapter;
 import com.SzymonKajdan.weatherapp.BaseFragments.BaseFragment;
+import com.SzymonKajdan.weatherapp.Database.AppDatabase;
 import com.SzymonKajdan.weatherapp.Models.City;
 import com.SzymonKajdan.weatherapp.Models.Forecastday;
 import com.SzymonKajdan.weatherapp.Models.Weather;
@@ -25,6 +27,7 @@ import com.SzymonKajdan.weatherapp.RetroFit.Rest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import org.joda.time.DateTime;
@@ -35,6 +38,7 @@ import java.io.IOException;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,11 +70,21 @@ public class InitFragment extends BaseFragment {
         super.onResume();
 
 
-    initFragments();
+        initFragments();
+       // setLoc();
         geocoder = new Geocoder(getContext());
         findLocation(geocoder);
         System.out.println(viewPagerAdapter.getCount());
 
+    }
+
+    private void setLoc() {
+        Locale locale = new Locale("en");
+        Locale.setDefault(locale);
+        Configuration config = getContext().getResources().getConfiguration();
+        config.locale = locale;
+        getContext().getResources().updateConfiguration(config,
+                getContext().getResources().getDisplayMetrics());
     }
 
     @Nullable
@@ -116,12 +130,12 @@ public class InitFragment extends BaseFragment {
 
 
                 if (response.body() != null) {
-                    System.out.println("sprawdzam"+checkCity(cities,city)+" "+city.getCity());
-                    if(checkCity(cities,city)){
-                        System.out.println("nie zpaisuje");
+                    System.out.println("sprawdzam" + checkCity(cities, city) + " " + city.getCity());
+                    if (checkCity(cities, city)) {
+                        //System.out.println("nie zpaisuje");
                         cities.add(city);
-                    }else {
-                        System.out.println("zpaiosuje");
+                    } else {
+                        //System.out.println("zpaiosuje");
 
                     }
                 } else {
@@ -130,10 +144,8 @@ public class InitFragment extends BaseFragment {
                 }
 
 
-
-
                 for (City c : cities) {
-                    System.out.println("zpaisuje "+c.getCity());
+                    System.out.println("zpaisuje " + c.getCity());
                     c.save();
                 }
 
@@ -154,12 +166,12 @@ public class InitFragment extends BaseFragment {
 
         cities = new ArrayList<>();
 
-
         cities.addAll(SQLite.select().from(City.class).queryList());
+
 
         //sprawdzam czy miasto jest w liscie z bazy jesli nie to sprawdxaam cyz w api jest takie maisto
         for (City c : cities) {
-            System.out.println(c.getCity());
+            //  System.out.println(c.getCity());
         }
 
     }
@@ -241,7 +253,7 @@ public class InitFragment extends BaseFragment {
     }
 
     private void findLocation(final Geocoder geocoder) {
-    viewPagerAdapter.clear();
+        viewPagerAdapter.clear();
 
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
@@ -255,10 +267,12 @@ public class InitFragment extends BaseFragment {
                         List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
 
-                        city.setCity(addressList.get(0).getLocality());
-
-
-
+                        if (addressList.get(0).getLocality().equals("Łódź")) {
+                            city.setCity("Lodz");
+                        }else {
+                            city.setCity(addressList.get(0).getLocality());
+                        }
+                        System.out.println("porbralem" + city.getCity());
 
                         loadCities();
 
