@@ -73,6 +73,7 @@ public class InitFragment extends BaseFragment {
         initFragments();
        // setLoc();
         geocoder = new Geocoder(getContext());
+
         findLocation(geocoder);
         System.out.println(viewPagerAdapter.getCount());
 
@@ -265,47 +266,26 @@ public class InitFragment extends BaseFragment {
 
                     try {
                         List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                       city.setCity(addressList.get(0).getLocality());
 
-
-                        if (addressList.get(0).getLocality().equals("Łódź")) {
-                            city.setCity("Lodz");
-                        }else {
-                            city.setCity(addressList.get(0).getLocality());
-                        }
-                        System.out.println("porbralem" + city.getCity());
-
+                        city.setCity(replacerNamesOfCities(city));
+                        System.out.println(city.getCity()+" porablo ");
                         loadCities();
 
                         checkIsCityInApi(city);
 
                         loadWeatherForCities(cities);
-//                        System.out.println("maista wielkosc" + cities.size());
-//                        System.out.println("wilkosc pogoód" + weatherList.size());
-//                        System.out.println("wielkosc adpatera " + viewPagerAdapter.getCount());
-
-//                        if (checkCity(cities, city)) {
-//                            checkIsCityInApi(city);
-//                        } else {
-//
-//                            loadWeatherForCities(cities);
-//                        }
-
 
                     } catch (IOException e) {
                         Toast.makeText(getContext(), "Lokazacja nie wyszuwalal kortynatow przyjmuje domyslne ", Toast.LENGTH_LONG).show();
                         System.out.println("eroor" + city.getCity());
-                        City city = new City();
-                        city.setCity("Lodz");
+
+                        city.setCity("lodz");
                         loadCities();
                         checkIsCityInApi(city);
 
                         loadWeatherForCities(cities);
-//                        if (checkCity(cities, city)) {
-//                            checkIsCityInApi(city);
-//                        } else {
-//
-//                            loadWeatherForCities(cities);
-//                        }
+
                     }
                 }
             });
@@ -314,6 +294,34 @@ public class InitFragment extends BaseFragment {
         }
 
 
+    }
+
+    private String replacerNamesOfCities(City city) {
+        String cityanme=city.getCity().toLowerCase();
+
+        if(cityanme.contains("ł")){
+           cityanme= cityanme.replace("ł","l");
+        }
+        if(cityanme.contains("ó")){
+            cityanme= cityanme.replace("ó","o");
+        }
+        if(cityanme.contains("ż")){
+            cityanme= cityanme.replace("ż","z");
+        }
+        if(cityanme.contains("ź")){
+            cityanme= cityanme.replace("ź","z");
+        }
+        if(cityanme.contains("ą")){
+            cityanme=  cityanme.replace("ą","a");
+        }
+        if(cityanme.contains("ń")){
+            cityanme=  cityanme.replace("ń","n");
+        }
+        if(cityanme.contains("ę")){
+            cityanme= cityanme.replace("ę","e");
+        }
+        System.out.println("city "+ cityanme);
+        return  cityanme;
     }
 
 }
